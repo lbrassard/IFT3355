@@ -55,16 +55,22 @@ function inverseMat(m){
 
 function idMat4(){
   // Create Identity matrix
-
-  // TODO
+  return new THREE.Matrix4().set(1,0,0,0,
+                                 0,1,0,0,
+                                 0,0,1,0,
+                                 0,0,0,1);
 }
 
 function translateMat(matrix, x, y, z){
   // Apply translation [x, y, z] to @matrix
   // matrix: THREE.Matrix3
   // x, y, z: float
-  
-  // TODO
+  let translationMat = new THREE.Matrix4().set(1, 0, 0, x,
+      0, 1, 0, y,
+      0, 0, 1, z,
+      0, 0, 0, 1);
+
+  return multMat(matrix, translationMat);
 }
 
 function rotateMat(matrix, angle, axis){
@@ -72,8 +78,28 @@ function rotateMat(matrix, angle, axis){
   // matrix: THREE.Matrix3
   // angle: float
   // axis: string "x", "y" or "z"
-  
-  // TODO
+  let xRotationMat = new THREE.Matrix4().set(1,0,0,0,
+                                             0, Math.cos(angle), -Math.sin(angle), 0,
+                                             0, Math.sin(angle), Math.cos(angle), 0,
+                                             0,0,0,1);
+  let yRotationMat = new THREE.Matrix4().set(Math.cos(angle), 0, Math.sin(angle), 0,
+                                             0, 1, 0, 0,
+                                               -Math.sin(angle), 0, Math.cos(angle), 0,
+                                                0, 0, 0, 1);
+  let zRotationMat = new THREE.Matrix4().set(Math.cos(angle), -Math.sin(angle), 0, 0,
+                                             Math.sin(angle), Math.cos(angle), 0, 0,
+                                             0,0,1,0,
+                                             0,0,0,1);
+
+  if (axis === "x"){
+    return multMat(matrix, xRotationMat);
+  }
+  if (axis === "y"){
+    return multMat(matrix, yRotationMat);
+  }
+  if (axis === "z"){
+    return multMat(matrix, zRotationMat);
+  }
 }
 
 function rotateVec3(v, angle, axis){
@@ -81,16 +107,40 @@ function rotateVec3(v, angle, axis){
   // v: THREE.Vector3
   // angle: float
   // axis: string "x", "y" or "z"
-  
-  // TODO
+  let xRotationMat = new THREE.Matrix4().set(1,0,0,0,
+      0, Math.cos(angle), -Math.sin(angle), 0,
+      0, Math.sin(angle), Math.cos(angle), 0,
+      0,0,0,1);
+  let yRotationMat = new THREE.Matrix4().set(Math.cos(angle), 0, Math.sin(angle), 0,
+      0, 1, 0, 0,
+      -Math.sin(angle), 0, Math.cos(angle), 0,
+      0, 0, 0, 1);
+  let zRotationMat = new THREE.Matrix4().set(Math.cos(angle), -Math.sin(angle), 0, 0,
+      Math.sin(angle), Math.cos(angle), 0, 0,
+      0,0,1,0,
+      0,0,0,1);
+
+  if (axis === "x"){
+    return v.applyMatrix4(xRotationMat);
+  }
+  if (axis === "y"){
+    return v.applyMatrix4(yRotationMat);
+  }
+  if (axis === "z"){
+    return v.applyMatrix4(zRotationMat);
+  }
+
 }
 
 function rescaleMat(matrix, x, y, z){
   // Apply scaling @x, @y and @z to @matrix
   // matrix: THREE.Matrix3
   // x, y, z: float
-  
-  // TODO
+  let rotationMat = new THREE.Matrix4().set(x, 0,0,0,
+                                            0, y, 0, 0,
+                                            0, 0, z, 0,
+                                            0, 0, 0, 1);
+  return multMat(matrix, rotationMat);
 }
 
 class Robot {
