@@ -136,11 +136,11 @@ function rescaleMat(matrix, x, y, z){
   // Apply scaling @x, @y and @z to @matrix
   // matrix: THREE.Matrix3
   // x, y, z: float
-  let rotationMat = new THREE.Matrix4().set(x, 0,0,0,
+  let rescaleMat = new THREE.Matrix4().set(x, 0,0,0,
                                             0, y, 0, 0,
                                             0, 0, z, 0,
                                             0, 0, 0, 1);
-  return multMat(matrix, rotationMat);
+  return multMat(matrix, rescaleMat);
 }
 
 class Robot {
@@ -149,8 +149,10 @@ class Robot {
     this.torsoHeight = 1.5;
     this.torsoRadius = 0.75;
     this.headRadius = 0.32;
+
     // Add parameters for parts
     // TODO
+    this.armRadius = 0.35;
 
     // Animation
     this.walkDirection = new THREE.Vector3( 0, 0, 1 );
@@ -176,6 +178,39 @@ class Robot {
     return initialHeadMatrix;
   }
 
+  initialRightArmMatrix(){
+    var initRightArmMat = idMat4();
+    initRightArmMat = translateMat(initRightArmMat, this.torsoRadius, this.torsoHeight * 0.38, 0);
+    initRightArmMat = rescaleMat(initRightArmMat, 2, 0.5, 0.5);
+
+    return initRightArmMat;
+  }
+
+  initialLeftArmMatrix(){
+    var initLeftArmMat = idMat4();
+    initLeftArmMat = translateMat(initLeftArmMat, -this.torsoRadius, this.torsoHeight * 0.38, 0);
+    initLeftArmMat = rescaleMat(initLeftArmMat, 2, 0.5, 0.5);
+
+    return initLeftArmMat;
+  }
+
+  initialRightForearmMatrix(){
+    var initRightForearmMat = idMat4();
+    initRightForearmMat = translateMat(initRightForearmMat, this.torsoRadius + this.armRadius * 2.7, this.torsoHeight * 0.38, 0);
+    initRightForearmMat = rescaleMat(initRightForearmMat, 1.1, 0.38, 0.5);
+
+    return initRightForearmMat;
+
+  }
+
+  initialLeftForearmMatrix(){
+    var initLeftForearmMat = idMat4();
+    initLeftForearmMat = translateMat(initLeftForearmMat, -this.torsoRadius - this.armRadius * 2.7, this.torsoHeight * 0.38, 0);
+    initLeftForearmMat = rescaleMat(initLeftForearmMat, 1.1, 0.38, 0.5);
+
+    return initLeftForearmMat;
+  }
+
   initialize() {
     // Torso
     var torsoGeometry = new THREE.CubeGeometry(2*this.torsoRadius, this.torsoHeight, this.torsoRadius, 64);
@@ -186,7 +221,16 @@ class Robot {
     this.head = new THREE.Mesh(headGeometry, this.material);
 
     // Add parts
-    // TODO
+    // TODO: leftThigh, rightThigh, leftLeg, rightLeg
+
+    // Arms
+    var armGeometry = new THREE.SphereGeometry(this.armRadius, this.armRadius, this.armRadius);
+    this.rightArm = new THREE.Mesh(armGeometry, this.material);
+    this.leftArm = new THREE.Mesh(armGeometry, this.material);
+
+    // Forearms
+    this.rightForearm = new THREE.Mesh(armGeometry, this.material);
+    this.leftForearm = new THREE.Mesh(armGeometry, this.material);
 
     // Torse transformation
     this.torsoInitialMatrix = this.initialTorsoMatrix();
@@ -200,13 +244,38 @@ class Robot {
     this.head.setMatrix(matrix);
 
     // Add transformations
-    // TODO
+    // TODO thighs and legs
+    // Arms transformations
+    this.rightArmInitMatrix = this.initialRightArmMatrix();
+    this.rightArmMatrix = idMat4();
+    var multRightArmMatrix = multMat(this.torsoInitialMatrix, this.rightArmInitMatrix);
+    this.rightArm.setMatrix(multRightArmMatrix);
+
+    this.leftArmInitMatrix = this.initialLeftArmMatrix();
+    this.leftArmMatrix = idMat4();
+    var multLeftArmMatrix = multMat(this.torsoInitialMatrix, this.leftArmInitMatrix);
+    this.leftArm.setMatrix(multLeftArmMatrix);
+
+    // Forearms transformations
+    this.rightForearmInitMatrix = this.initialRightForearmMatrix();
+    this.rightForearmMatrix = idMat4();
+    var multRightForearmMatrix = multMat(this.torsoInitialMatrix, this.rightForearmInitMatrix);
+    this.rightForearm.setMatrix(multRightForearmMatrix);
+
+    this.leftForearmInitMatrix = this.initialLeftForearmMatrix();
+    this.leftForearmMatrix = idMat4();
+    var multLeftForearmMatrix = multMat(this.torsoInitialMatrix, this.leftForearmInitMatrix);
+    this.leftForearm.setMatrix(multLeftForearmMatrix);
 
 	// Add robot to scene
 	scene.add(this.torso);
     scene.add(this.head);
     // Add parts
-    // TODO
+    // TODO: add thighs and legs
+    scene.add(this.rightArm);
+    scene.add(this.leftArm);
+    scene.add(this.rightForearm);
+    scene.add(this.leftForearm);
   }
 
   rotateTorso(angle){
@@ -216,12 +285,28 @@ class Robot {
     this.torsoMatrix = rotateMat(this.torsoMatrix, angle, "y");
     this.torsoMatrix = multMat(torsoMatrix, this.torsoMatrix);
 
-    var matrix = multMat(this.torsoMatrix, this.torsoInitialMatrix);
-    this.torso.setMatrix(matrix);
+    torsoMatrix = multMat(this.torsoMatrix, this.torsoInitialMatrix);
+    this.torso.setMatrix(torsoMatrix);
 
-    var matrix2 = multMat(this.headMatrix, this.headInitialMatrix);
-    matrix = multMat(matrix, matrix2);
-    this.head.setMatrix(matrix);
+    var headMatrix = multMat(this.headMatrix, this.headInitialMatrix);
+    var headAndTorsoMatrix = multMat(torsoMatrix, headMatrix);
+    this.head.setMatrix(headAndTorsoMatrix);
+
+    var rArmMatrix = multMat(this.rightArmMatrix, this.rightArmInitMatrix);
+    var rArmAndTorsoMatrix = multMat(torsoMatrix, rArmMatrix);
+    this.rightArm.setMatrix(rArmAndTorsoMatrix);
+
+    var lArmMatrix = multMat(this.leftArmMatrix, this.leftArmInitMatrix);
+    var lArmAndTorsoMatrix = multMat(torsoMatrix, lArmMatrix);
+    this.leftArm.setMatrix(lArmAndTorsoMatrix);
+
+    var rForearmMatrix = multMat(this.rightForearmMatrix, this.rightForearmInitMatrix);
+    var rForearmAndTorsoMatrix = multMat(torsoMatrix, rForearmMatrix);
+    this.rightForearm.setMatrix(rForearmAndTorsoMatrix);
+
+    var lForearmMatrix = multMat(this.leftForearmMatrix, this.leftForearmInitMatrix);
+    var lForearmAndTorsoMatrix = multMat(torsoMatrix, lForearmMatrix);
+    this.leftForearm.setMatrix(lForearmAndTorsoMatrix);
 
     this.walkDirection = rotateVec3(this.walkDirection, angle, "y");
   }
@@ -229,12 +314,28 @@ class Robot {
   moveTorso(speed){
     this.torsoMatrix = translateMat(this.torsoMatrix, speed * this.walkDirection.x, speed * this.walkDirection.y, speed * this.walkDirection.z);
 
-    var matrix = multMat(this.torsoMatrix, this.torsoInitialMatrix);
-    this.torso.setMatrix(matrix);
+    var torsoMatrix = multMat(this.torsoMatrix, this.torsoInitialMatrix);
+    this.torso.setMatrix(torsoMatrix);
 
-    var matrix2 = multMat(this.headMatrix, this.headInitialMatrix);
-    matrix = multMat(matrix, matrix2);
-    this.head.setMatrix(matrix);
+    var headMatrix = multMat(this.headMatrix, this.headInitialMatrix);
+    var torsoAndHeadMatrix = multMat(torsoMatrix, headMatrix);
+    this.head.setMatrix(torsoAndHeadMatrix);
+
+    var rArmMatrix = multMat(this.rightArmMatrix, this.rightArmInitMatrix);
+    var rArmAndTorsoMatrix = multMat(torsoMatrix, rArmMatrix);
+    this.rightArm.setMatrix(rArmAndTorsoMatrix);
+
+    var lArmMatrix = multMat(this.leftArmMatrix, this.leftArmInitMatrix);
+    var lArmAndTorsoMatrix = multMat(torsoMatrix, lArmMatrix);
+    this.leftArm.setMatrix(lArmAndTorsoMatrix);
+
+    var rForearmMatrix = multMat(this.rightForearmMatrix, this.rightForearmInitMatrix);
+    var rForearmAndTorsoMatrix = multMat(torsoMatrix, rForearmMatrix);
+    this.rightForearm.setMatrix(rForearmAndTorsoMatrix);
+
+    var lForearmMatrix = multMat(this.leftForearmMatrix, this.leftForearmInitMatrix);
+    var lForearmAndTorsoMatrix = multMat(torsoMatrix, lForearmMatrix);
+    this.leftForearm.setMatrix(lForearmAndTorsoMatrix);
   }
 
   rotateHead(angle){
@@ -263,6 +364,7 @@ var selectedRobotComponent = 0;
 var components = [
   "Torso",
   "Head",
+  "RightArm",
   // Add parts names
   // TODO
 ];
