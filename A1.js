@@ -70,7 +70,7 @@ function translateMat(matrix, x, y, z){
       0, 0, 1, z,
       0, 0, 0, 1);
 
-  return multMat(matrix, translationMat);
+  return multMat(translationMat, matrix);
 }
 
 function rotateMat(matrix, angle, axis){
@@ -92,13 +92,16 @@ function rotateMat(matrix, angle, axis){
                                              0,0,0,1);
 
   if (axis === "x"){
-    return multMat(matrix, xRotationMat);
+    return multMat(xRotationMat, matrix);
+    // return multMat(matrix, xRotationMat);
   }
   if (axis === "y"){
-    return multMat(matrix, yRotationMat);
+    return multMat(yRotationMat, matrix);
+    // return multMat(matrix, yRotationMat);
   }
   if (axis === "z"){
-    return multMat(matrix, zRotationMat);
+    return multMat(zRotationMat, matrix);
+    // return multMat(matrix, zRotationMat);
   }
 }
 
@@ -309,6 +312,7 @@ class Robot {
     this.leftForearm.setMatrix(lForearmAndTorsoMatrix);
 
     this.walkDirection = rotateVec3(this.walkDirection, angle, "y");
+
   }
 
   moveTorso(speed){
@@ -353,6 +357,20 @@ class Robot {
 
   // Add methods for other parts
   // TODO
+  rotateArms(angle){
+    var rightArmMatrix = this.rightArmMatrix;
+
+    this.rightArmMatrix  = this.torsoMatrix;
+    this.rightArmMatrix = rotateMat(this.rightArmMatrix, angle, "z");
+    this.rightArmMatrix = multMat(rightArmMatrix, this.rightArmMatrix);
+
+    var matrix = multMat(this.rightArmMatrix, this.rightArmInitMatrix);
+    matrix = multMat(this.torsoMatrix, matrix);
+    matrix = multMat(this.torsoInitialMatrix, matrix);
+    this.rightArm.setMatrix(matrix);
+
+  }
+
 }
 
 var robot = new Robot();
@@ -452,6 +470,8 @@ function checkKeyboard() {
         break;
       // Add more cases
       // TODO
+      case "RightArm":
+        robot.rotateArms(-0.1);
     }
   }
 }
