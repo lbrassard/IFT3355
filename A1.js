@@ -155,7 +155,12 @@ class Robot {
 
     // Add parameters for parts
     // TODO
+    // Arms and forearms parameters
     this.armRadius = 0.35;
+    this.rightArmZAngle = 0;
+    this.leftArmZAngle = 0;
+    this.rightArmYAngle = 0;
+    this.leftArmYAngle = 0;
 
     // Animation
     this.walkDirection = new THREE.Vector3( 0, 0, 1 );
@@ -183,7 +188,7 @@ class Robot {
 
   initialRightArmMatrix(){
     var initRightArmMat = idMat4();
-    initRightArmMat = translateMat(initRightArmMat, this.torsoRadius, this.torsoHeight * 0.38, 0);
+    initRightArmMat = translateMat(initRightArmMat, this.torsoRadius * 1.5, this.torsoHeight * 0.30, 0);
     initRightArmMat = rescaleMat(initRightArmMat, 2, 0.5, 0.5);
 
     return initRightArmMat;
@@ -191,7 +196,7 @@ class Robot {
 
   initialLeftArmMatrix(){
     var initLeftArmMat = idMat4();
-    initLeftArmMat = translateMat(initLeftArmMat, -this.torsoRadius, this.torsoHeight * 0.38, 0);
+    initLeftArmMat = translateMat(initLeftArmMat, -this.torsoRadius * 1.4, this.torsoHeight * 0.30, 0);
     initLeftArmMat = rescaleMat(initLeftArmMat, 2, 0.5, 0.5);
 
     return initLeftArmMat;
@@ -199,7 +204,7 @@ class Robot {
 
   initialRightForearmMatrix(){
     var initRightForearmMat = idMat4();
-    initRightForearmMat = translateMat(initRightForearmMat, this.torsoRadius + this.armRadius * 2.7, this.torsoHeight * 0.38, 0);
+    initRightForearmMat = translateMat(initRightForearmMat, this.torsoRadius * 1.5 + this.armRadius * 2.7, this.torsoHeight * 0.30, 0);
     initRightForearmMat = rescaleMat(initRightForearmMat, 1.1, 0.38, 0.5);
 
     return initRightForearmMat;
@@ -208,7 +213,7 @@ class Robot {
 
   initialLeftForearmMatrix(){
     var initLeftForearmMat = idMat4();
-    initLeftForearmMat = translateMat(initLeftForearmMat, -this.torsoRadius - this.armRadius * 2.7, this.torsoHeight * 0.38, 0);
+    initLeftForearmMat = translateMat(initLeftForearmMat, -this.torsoRadius * 1.4 - this.armRadius * 2.7, this.torsoHeight * 0.30, 0);
     initLeftForearmMat = rescaleMat(initLeftForearmMat, 1.1, 0.38, 0.5);
 
     return initLeftForearmMat;
@@ -356,20 +361,284 @@ class Robot {
   }
 
   // Add methods for other parts
-  // TODO
-  rotateArms(angle){
-    var rightArmMatrix = this.rightArmMatrix;
+  // TODO: thighs, legs and foreamrs
+  zRotateRightArm(angle){
+    if(this.rightArmZAngle > -0.6 && angle < 0) {
+      this.rightArmZAngle += angle;
+      if (this.rightArmZAngle < -1) {
+        this.rightArmZAngle = 0;
+      }
+      var rightArmMatrix = this.rightArmMatrix;
+      var rightForearmMatrix = this.rightForearmMatrix;
 
-    this.rightArmMatrix  = this.torsoMatrix;
-    this.rightArmMatrix = rotateMat(this.rightArmMatrix, angle, "z");
-    this.rightArmMatrix = multMat(rightArmMatrix, this.rightArmMatrix);
+      // Right arm z rotation
+      this.rightArmMatrix = idMat4();
+      this.rightArmMatrix = translateMat(this.rightArmMatrix, -0.30, -0.25, 0);
+      this.rightArmMatrix = rotateMat(this.rightArmMatrix, angle, "z");
+      this.rightArmMatrix = translateMat(this.rightArmMatrix, 0.30, 0.25, 0);
+      this.rightArmMatrix = multMat(rightArmMatrix, this.rightArmMatrix);
 
-    var matrix = multMat(this.rightArmMatrix, this.rightArmInitMatrix);
-    matrix = multMat(this.torsoMatrix, matrix);
-    matrix = multMat(this.torsoInitialMatrix, matrix);
-    this.rightArm.setMatrix(matrix);
+      var matrix = multMat(this.rightArmMatrix, this.rightArmInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.rightArm.setMatrix(matrix);
 
+      // Right forearm z rotation
+      this.rightForearmMatrix = idMat4();
+      this.rightForearmMatrix = translateMat(this.rightForearmMatrix, -0.30, -0.25, 0);
+      this.rightForearmMatrix = rotateMat(this.rightForearmMatrix, angle, "z");
+      this.rightForearmMatrix = translateMat(this.rightForearmMatrix, 0.30, 0.25, 0);
+      this.rightForearmMatrix = multMat(rightForearmMatrix, this.rightForearmMatrix);
+
+      var matrix2 = multMat(this.rightForearmMatrix, this.rightForearmInitMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.rightForearm.setMatrix(matrix2);
+    }
+    else if(this.rightArmZAngle < 0.4 && angle > 0) {
+      this.rightArmZAngle += angle;
+      if (this.rightArmZAngle > 1) {
+        this.rightArmZAngle = 0;
+      }
+      var rightArmMatrix = this.rightArmMatrix;
+      var rightForearmMatrix = this.rightForearmMatrix;
+      console.log(this.rightArmZAngle.toString());
+
+      // Right arm z rotation
+      this.rightArmMatrix = idMat4();
+      this.rightArmMatrix = translateMat(this.rightArmMatrix, -0.30, -0.25, 0);
+      this.rightArmMatrix = rotateMat(this.rightArmMatrix, angle, "z");
+      this.rightArmMatrix = translateMat(this.rightArmMatrix, 0.30, 0.25, 0);
+      this.rightArmMatrix = multMat(rightArmMatrix, this.rightArmMatrix);
+
+      var matrix = multMat(this.rightArmMatrix, this.rightArmInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.rightArm.setMatrix(matrix);
+
+      // Right forearm z rotation
+      this.rightForearmMatrix = idMat4();
+      this.rightForearmMatrix = translateMat(this.rightForearmMatrix, -0.30, -0.25, 0);
+      this.rightForearmMatrix = rotateMat(this.rightForearmMatrix, angle, "z");
+      this.rightForearmMatrix = translateMat(this.rightForearmMatrix, 0.30, 0.25, 0);
+      this.rightForearmMatrix = multMat(rightForearmMatrix, this.rightForearmMatrix);
+
+      var matrix2 = multMat(this.rightForearmMatrix, this.rightForearmInitMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.rightForearm.setMatrix(matrix2);
+    }
   }
+
+  zRotateLeftArm(angle){
+    if(this.leftArmZAngle > -0.3 && angle < 0) {
+      this.leftArmZAngle += angle;
+      if (this.leftArmZAngle < -1) {
+        this.leftArmZAngle = 0;
+      }
+      var leftArmMatrix = this.leftArmMatrix;
+      var leftForearmMatrix = this.leftForearmMatrix;
+
+      // Right arm z rotation
+      this.leftArmMatrix = idMat4();
+      this.leftArmMatrix = translateMat(this.leftArmMatrix, -0.30, -0.25, 0);
+      this.leftArmMatrix = rotateMat(this.leftArmMatrix, angle, "z");
+      this.leftArmMatrix = translateMat(this.leftArmMatrix, 0.30, 0.25, 0);
+      this.leftArmMatrix = multMat(leftArmMatrix, this.leftArmMatrix);
+
+      // Right forearm z rotation
+      this.leftForearmMatrix = idMat4();
+      this.leftForearmMatrix = translateMat(this.leftForearmMatrix, -0.30, -0.25, 0);
+      this.leftForearmMatrix = rotateMat(this.leftForearmMatrix, angle, "z");
+      this.leftForearmMatrix = translateMat(this.leftForearmMatrix, 0.30, 0.25, 0);
+      this.leftForearmMatrix = multMat(leftForearmMatrix, this.leftForearmMatrix);
+
+
+      var matrix = multMat(this.leftArmMatrix, this.leftArmInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.leftArm.setMatrix(matrix);
+
+      var matrix2 = multMat(this.leftForearmMatrix, this.leftForearmInitMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.leftForearm.setMatrix(matrix2);
+    }
+    else if(this.leftArmZAngle < 0.4 && angle > 0) {
+      this.leftArmZAngle += angle;
+      if (this.leftArmZAngle > 1) {
+        this.leftArmZAngle = 0;
+      }
+      var leftArmMatrix = this.leftArmMatrix;
+      var leftForearmMatrix = this.leftForearmMatrix;
+      console.log(this.leftArmZAngle.toString());
+
+      // Right arm z rotation
+      this.leftArmMatrix = idMat4();
+      this.leftArmMatrix = translateMat(this.leftArmMatrix, -0.30, -0.25, 0);
+      this.leftArmMatrix = rotateMat(this.leftArmMatrix, angle, "z");
+      this.leftArmMatrix = translateMat(this.leftArmMatrix, 0.30, 0.25, 0);
+      this.leftArmMatrix = multMat(leftArmMatrix, this.leftArmMatrix);
+
+      // Right forearm z rotation
+      this.leftForearmMatrix = idMat4();
+      this.leftForearmMatrix = translateMat(this.leftForearmMatrix, -0.30, -0.25, 0);
+      this.leftForearmMatrix = rotateMat(this.leftForearmMatrix, angle, "z");
+      this.leftForearmMatrix = translateMat(this.leftForearmMatrix, 0.30, 0.25, 0);
+      this.leftForearmMatrix = multMat(leftForearmMatrix, this.leftForearmMatrix);
+
+
+      var matrix = multMat(this.leftArmMatrix, this.leftArmInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.leftArm.setMatrix(matrix);
+
+      var matrix2 = multMat(this.leftForearmMatrix, this.leftForearmInitMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.leftForearm.setMatrix(matrix2);
+    }
+  }
+
+  yRotateRightArm(angle){
+    if(this.rightArmYAngle > -0.7 && angle < 0) {
+      this.rightArmYAngle += angle;
+      if (this.rightArmYAngle < -1) {
+        this.rightArmYAngle = 0;
+      }
+      var rightArmMatrix = this.rightArmMatrix;
+      var rightForearmMatrix = this.rightForearmMatrix;
+      console.log(angle.toString());
+
+      // Right arm y rotation
+      this.rightArmMatrix = idMat4();
+      this.rightArmMatrix = translateMat(this.rightArmMatrix, -0.30, -0.25, 0);
+      this.rightArmMatrix = rotateMat(this.rightArmMatrix, angle, "y");
+      this.rightArmMatrix = translateMat(this.rightArmMatrix, 0.30, 0.25, 0);
+      this.rightArmMatrix = multMat(rightArmMatrix, this.rightArmMatrix);
+
+      var matrix = multMat(this.rightArmMatrix, this.rightArmInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.rightArm.setMatrix(matrix);
+
+      // Right forearm y rotation
+      this.rightForearmMatrix = idMat4();
+      this.rightForearmMatrix = translateMat(this.rightForearmMatrix, -0.30, -0.25, 0);
+      this.rightForearmMatrix = rotateMat(this.rightForearmMatrix, angle, "y");
+      this.rightForearmMatrix = translateMat(this.rightForearmMatrix, 0.30, 0.25, 0);
+      this.rightForearmMatrix = multMat(rightForearmMatrix, this.rightForearmMatrix);
+
+      var matrix2 = multMat(this.rightForearmMatrix, this.rightForearmInitMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.rightForearm.setMatrix(matrix2);
+    }
+    else if(this.rightArmYAngle < 0.4 && angle > 0) {
+      this.rightArmYAngle += angle;
+      if (this.rightArmYAngle > 1) {
+        this.rightArmYAngle = 0;
+      }
+      var rightArmMatrix = this.rightArmMatrix;
+      var rightForearmMatrix = this.rightForearmMatrix;
+      console.log(this.rightArmYAngle.toString());
+
+      // Right arm y rotation
+      this.rightArmMatrix = idMat4();
+      this.rightArmMatrix = translateMat(this.rightArmMatrix, -0.30, -0.25, 0);
+      this.rightArmMatrix = rotateMat(this.rightArmMatrix, angle, "y");
+      this.rightArmMatrix = translateMat(this.rightArmMatrix, 0.30, 0.25, 0);
+      this.rightArmMatrix = multMat(rightArmMatrix, this.rightArmMatrix);
+
+      var matrix = multMat(this.rightArmMatrix, this.rightArmInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.rightArm.setMatrix(matrix);
+
+      // Right forearm y rotation
+      this.rightForearmMatrix = idMat4();
+      this.rightForearmMatrix = translateMat(this.rightForearmMatrix, -0.30, -0.25, 0);
+      this.rightForearmMatrix = rotateMat(this.rightForearmMatrix, angle, "y");
+      this.rightForearmMatrix = translateMat(this.rightForearmMatrix, 0.30, 0.25, 0);
+      this.rightForearmMatrix = multMat(rightForearmMatrix, this.rightForearmMatrix);
+
+      var matrix2 = multMat(this.rightForearmMatrix, this.rightForearmInitMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.rightForearm.setMatrix(matrix2);
+    }
+  }
+
+  yRotateLeftArm(angle){
+    if(this.leftArmYAngle > -0.3 && angle < 0) {
+      this.leftArmYAngle += angle;
+      if (this.leftArmYAngle < -1) {
+        this.leftArmYAngle = 0;
+      }
+      var leftArmMatrix = this.leftArmMatrix;
+      var leftForearmMatrix = this.leftForearmMatrix;
+
+      // Right arm z rotation
+      this.leftArmMatrix = idMat4();
+      this.leftArmMatrix = translateMat(this.leftArmMatrix, -0.30, -0.25, 0);
+      this.leftArmMatrix = rotateMat(this.leftArmMatrix, angle, "y");
+      this.leftArmMatrix = translateMat(this.leftArmMatrix, 0.30, 0.25, 0);
+      this.leftArmMatrix = multMat(leftArmMatrix, this.leftArmMatrix);
+
+      // Right forearm z rotation
+      this.leftForearmMatrix = idMat4();
+      this.leftForearmMatrix = translateMat(this.leftForearmMatrix, -0.30, -0.25, 0);
+      this.leftForearmMatrix = rotateMat(this.leftForearmMatrix, angle, "y");
+      this.leftForearmMatrix = translateMat(this.leftForearmMatrix, 0.30, 0.25, 0);
+      this.leftForearmMatrix = multMat(leftForearmMatrix, this.leftForearmMatrix);
+
+
+      var matrix = multMat(this.leftArmMatrix, this.leftArmInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.leftArm.setMatrix(matrix);
+
+      var matrix2 = multMat(this.leftForearmMatrix, this.leftForearmInitMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.leftForearm.setMatrix(matrix2);
+    }
+    else if(this.leftArmYAngle < 0.4 && angle > 0) {
+      this.leftArmYAngle += angle;
+      if (this.leftArmYAngle > 1) {
+        this.leftArmYAngle = 0;
+      }
+      var leftArmMatrix = this.leftArmMatrix;
+      var leftForearmMatrix = this.leftForearmMatrix;
+      console.log(this.leftArmYAngle.toString());
+
+      // Right arm z rotation
+      this.leftArmMatrix = idMat4();
+      this.leftArmMatrix = translateMat(this.leftArmMatrix, -0.30, -0.25, 0);
+      this.leftArmMatrix = rotateMat(this.leftArmMatrix, angle, "y");
+      this.leftArmMatrix = translateMat(this.leftArmMatrix, 0.30, 0.25, 0);
+      this.leftArmMatrix = multMat(leftArmMatrix, this.leftArmMatrix);
+
+      // Right forearm z rotation
+      this.leftForearmMatrix = idMat4();
+      this.leftForearmMatrix = translateMat(this.leftForearmMatrix, -0.30, -0.25, 0);
+      this.leftForearmMatrix = rotateMat(this.leftForearmMatrix, angle, "y");
+      this.leftForearmMatrix = translateMat(this.leftForearmMatrix, 0.30, 0.25, 0);
+      this.leftForearmMatrix = multMat(leftForearmMatrix, this.leftForearmMatrix);
+
+
+      var matrix = multMat(this.leftArmMatrix, this.leftArmInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.leftArm.setMatrix(matrix);
+
+      var matrix2 = multMat(this.leftForearmMatrix, this.leftForearmInitMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.leftForearm.setMatrix(matrix2);
+    }
+  }
+
 
 }
 
@@ -383,6 +652,7 @@ var components = [
   "Torso",
   "Head",
   "RightArm",
+  "LeftArm",
   // Add parts names
   // TODO
 ];
@@ -429,6 +699,12 @@ function checkKeyboard() {
         break;
       // Add more cases
       // TODO
+      case "RightArm":
+        robot.zRotateRightArm(0.1);
+        break;
+      case "LeftArm":
+        robot.zRotateLeftArm(-0.1);
+        break;
     }
   }
 
@@ -442,6 +718,13 @@ function checkKeyboard() {
         break;
       // Add more cases
       // TODO
+      case "RightArm":
+        robot.zRotateRightArm(-0.1);
+        break;
+      case "LeftArm":
+        robot.zRotateLeftArm(0.1);
+        break;
+
     }
   }
 
@@ -456,6 +739,13 @@ function checkKeyboard() {
         break;
       // Add more cases
       // TODO
+      case "RightArm":
+        robot.yRotateRightArm(-0.1);
+        break;
+      case "LeftArm":
+        robot.yRotateLeftArm(-0.1);
+        break;
+
     }
   }
 
@@ -471,7 +761,11 @@ function checkKeyboard() {
       // Add more cases
       // TODO
       case "RightArm":
-        robot.rotateArms(-0.1);
+        robot.yRotateRightArm(0.1);
+       break;
+      case "LeftArm":
+        robot.yRotateLeftArm(0.1);
+        break;
     }
   }
 }
