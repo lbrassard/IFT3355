@@ -441,6 +441,11 @@ class Robot {
     var xTranslate = 0.9;
     var yTranslate = 0.4;
     var zTranslate = 0;
+    var tempRightForearmXAngle = this.rightForearmXAngle;
+
+    if(this.rightForearmXAngle != 0){
+      this.xRotateRightForearm(-tempRightForearmXAngle);
+    }
 
     if(this.rightArmZAngle > 0 && angle < 0) {
       this.rightArmZAngle += angle;
@@ -507,12 +512,21 @@ class Robot {
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.rightForearm.setMatrix(matrix2);
     }
+    if(tempRightForearmXAngle != 0){
+      this.xRotateRightForearm(tempRightForearmXAngle);
+    }
   }
 
   zRotateLeftArm(angle){
     var xTranslate = 0.9;
     var yTranslate = 0.4;
     var zTranslate = 0;
+    var tempLeftForearmXAngle = this.leftForearmXAngle;
+
+    if(this.leftForearmXAngle != 0){
+      this.xRotateLeftForearm(-tempLeftForearmXAngle);
+    }
+
     if(this.leftArmZAngle > -1.4 && angle < 0) {
       this.leftArmZAngle += angle;
       if (this.leftArmZAngle < -1.5) {
@@ -579,12 +593,21 @@ class Robot {
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.leftForearm.setMatrix(matrix2);
     }
+    if(tempLeftForearmXAngle != 0){
+      this.xRotateLeftForearm(tempLeftForearmXAngle);
+    }
   }
 
   xRotateRightArm(angle){
     var xTranslate = 0.5;
     var yTranslate = 0.5;
     var zTranslate = 0;
+    var tempRightForearmXAngle = this.rightForearmXAngle;
+
+    if(this.rightForearmXAngle != 0){
+      this.xRotateRightForearm(-tempRightForearmXAngle);
+    }
+
     if(this.rightArmXAngle > -2.7 && angle < 0 && this.rightArmZAngle < 1 && this.rightArmZAngle > -1) {
       this.rightArmXAngle += angle;
       if (this.rightArmXAngle < -2.8) {
@@ -651,13 +674,21 @@ class Robot {
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.rightForearm.setMatrix(matrix2);
     }
-    // TODO fix case where forearm moves and then arm moves
+    if(tempRightForearmXAngle != 0){
+      this.xRotateRightForearm(tempRightForearmXAngle);
+    }
   }
 
   xRotateLeftArm(angle){
     var xTranslate = 0.5;
     var yTranslate = 0.5;
     var zTranslate = 0;
+    var tempLeftForearmXAngle = this.leftForearmXAngle;
+
+    if(this.leftForearmXAngle != 0){
+      this.xRotateLeftForearm(-tempLeftForearmXAngle);
+    }
+
     if(this.leftArmXAngle > -2.8 && angle < 0 && this.leftArmZAngle < 0.5 && this.leftArmZAngle > -1) {
       this.leftArmXAngle += angle;
       if (this.leftArmXAngle < -2.9) {
@@ -724,13 +755,16 @@ class Robot {
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.leftForearm.setMatrix(matrix2);
     }
-    // TODO fix case where forearm moves and then arm moves
+    if(tempLeftForearmXAngle != 0){
+      this.xRotateLeftForearm(tempLeftForearmXAngle);
+    }
   }
 
   xRotateRightForearm(angle){
     var xTranslate = 0.5;
     var yTranslate = 0.5;
     var zTranslate = 0;
+
     if(this.rightForearmXAngle > -2 && angle < 0) {
       this.rightForearmXAngle += angle;
       if (this.rightForearmXAngle < -2.1) {
