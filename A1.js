@@ -608,7 +608,7 @@ class Robot {
       this.xRotateRightForearm(-tempRightForearmXAngle);
     }
 
-    if(this.rightArmXAngle > -2.7 && angle < 0 && this.rightArmZAngle < 1 && this.rightArmZAngle > -1) {
+    if(this.rightArmXAngle > -2.7 && angle < 0) {
       this.rightArmXAngle += angle;
       if (this.rightArmXAngle < -2.8) {
         this.rightArmXAngle = 0;
@@ -641,7 +641,7 @@ class Robot {
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.rightForearm.setMatrix(matrix2);
     }
-    else if(this.rightArmXAngle < 0.9 && angle > 0 && this.rightArmZAngle < 1  && this.rightArmZAngle > -1) {
+    else if(this.rightArmXAngle < 0.9 && angle > 0) {
       this.rightArmXAngle += angle;
       if (this.rightArmXAngle > 1) {
         this.rightArmXAngle = 0;
@@ -689,7 +689,7 @@ class Robot {
       this.xRotateLeftForearm(-tempLeftForearmXAngle);
     }
 
-    if(this.leftArmXAngle > -2.8 && angle < 0 && this.leftArmZAngle < 0.5 && this.leftArmZAngle > -1) {
+    if(this.leftArmXAngle > -2.8 && angle < 0) {
       this.leftArmXAngle += angle;
       if (this.leftArmXAngle < -2.9) {
         this.leftArmXAngle = 0;
@@ -722,7 +722,7 @@ class Robot {
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.leftForearm.setMatrix(matrix2);
     }
-    else if(this.leftArmXAngle < 0.9 && angle > 0 && this.leftArmZAngle < 0.5 && this.leftArmZAngle > -1) {
+    else if(this.leftArmXAngle < 0.9 && angle > 0) {
       this.leftArmXAngle += angle;
       if (this.leftArmXAngle > 1) {
         this.leftArmXAngle = 0;
