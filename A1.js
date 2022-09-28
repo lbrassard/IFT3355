@@ -168,7 +168,6 @@ class Robot {
 
     // Material
     this.material = new THREE.MeshNormalMaterial();
-    this.otherMaterial = new THREE.MeshBasicMaterial();
 
     // Initial pose
     this.initialize()
@@ -265,21 +264,21 @@ class Robot {
 
     //Thighs
     var thighGeometry = new THREE.SphereGeometry(this.thighRadius,this.thighRadius,this.thighRadius);
-    this.rightThigh = new THREE.Mesh(thighGeometry,this.otherMaterial);
+    this.rightThigh = new THREE.Mesh(thighGeometry,this.material);
     this.leftThigh = new THREE.Mesh(thighGeometry,this.material);
 
     //Legs
     var legGeometry = new THREE.SphereGeometry(this.thighRadius,this.thighRadius,this.thighRadius);
-    this.rightLeg = new THREE.Mesh(thighGeometry,this.otherMaterial);
+    this.rightLeg = new THREE.Mesh(thighGeometry,this.material);
     this.leftLeg = new THREE.Mesh(thighGeometry,this.material);
 
     // Arms
     var armGeometry = new THREE.SphereGeometry(this.armRadius, this.armRadius, this.armRadius);
-    this.rightArm = new THREE.Mesh(armGeometry, this.otherMaterial);
+    this.rightArm = new THREE.Mesh(armGeometry, this.material);
     this.leftArm = new THREE.Mesh(armGeometry, this.material);
 
     // Forearms
-    this.rightForearm = new THREE.Mesh(armGeometry, this.otherMaterial);
+    this.rightForearm = new THREE.Mesh(armGeometry, this.material);
     this.leftForearm = new THREE.Mesh(armGeometry, this.material);
 
     // Torse transformation
@@ -398,10 +397,6 @@ class Robot {
     var lLegMatrix = multMat(this.leftLegMatrix, this.leftLegInitMatrix);
     var lLegAndTorsoMatrix = multMat(torsoMatrix, lLegMatrix);
     this.leftLeg.setMatrix(lLegAndTorsoMatrix);
-
-
-
-    //TODO thighs and legs
 
     this.walkDirection = rotateVec3(this.walkDirection, angle, "y");
 
