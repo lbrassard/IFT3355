@@ -12,7 +12,7 @@ renderer.setClearColor(0xffffff); // white background colour
 document.body.appendChild(renderer.domElement);
 
 // SETUP CAMERA
-var camera = new THREE.PerspectiveCamera(30, 1, 0.1, 1000); // view angle, aspect ratio, near, far
+var camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000); // view angle, aspect ratio, near, far
 camera.position.set(10,5,10);
 camera.lookAt(scene.position);
 scene.add(camera);
@@ -168,6 +168,7 @@ class Robot {
 
     // Material
     this.material = new THREE.MeshNormalMaterial();
+    this.otherMaterial = new THREE.MeshBasicMaterial();
 
     // Initial pose
     this.initialize()
@@ -264,21 +265,21 @@ class Robot {
 
     //Thighs
     var thighGeometry = new THREE.SphereGeometry(this.thighRadius,this.thighRadius,this.thighRadius);
-    this.rightThigh = new THREE.Mesh(thighGeometry,this.material);
+    this.rightThigh = new THREE.Mesh(thighGeometry,this.otherMaterial);
     this.leftThigh = new THREE.Mesh(thighGeometry,this.material);
 
     //Legs
     var legGeometry = new THREE.SphereGeometry(this.thighRadius,this.thighRadius,this.thighRadius);
-    this.rightLeg = new THREE.Mesh(thighGeometry,this.material);
+    this.rightLeg = new THREE.Mesh(thighGeometry,this.otherMaterial);
     this.leftLeg = new THREE.Mesh(thighGeometry,this.material);
 
     // Arms
     var armGeometry = new THREE.SphereGeometry(this.armRadius, this.armRadius, this.armRadius);
-    this.rightArm = new THREE.Mesh(armGeometry, this.material);
+    this.rightArm = new THREE.Mesh(armGeometry, this.otherMaterial);
     this.leftArm = new THREE.Mesh(armGeometry, this.material);
 
     // Forearms
-    this.rightForearm = new THREE.Mesh(armGeometry, this.material);
+    this.rightForearm = new THREE.Mesh(armGeometry, this.otherMaterial);
     this.leftForearm = new THREE.Mesh(armGeometry, this.material);
 
     // Torse transformation
@@ -292,8 +293,6 @@ class Robot {
     var matrix = multMat(this.torsoInitialMatrix, this.headInitialMatrix);
     this.head.setMatrix(matrix);
 
-    // Add transformations
-    // TODO thighs and legs
     // Arms transformations
     this.rightArmInitMatrix = this.initialRightArmMatrix();
     this.rightArmMatrix = idMat4();
@@ -342,10 +341,7 @@ class Robot {
 
 	// Add robot to scene
 	  scene.add(this.torso);
-
     scene.add(this.head);
-    // Add parts
-    // TODO: add thighs and legs
     scene.add(this.rightArm);
     scene.add(this.leftArm);
     scene.add(this.rightForearm);
@@ -387,6 +383,24 @@ class Robot {
     var lForearmAndTorsoMatrix = multMat(torsoMatrix, lForearmMatrix);
     this.leftForearm.setMatrix(lForearmAndTorsoMatrix);
 
+    var rThighMatrix = multMat(this.rightThighMatrix, this.rightThighInitMatrix);
+    var rThighAndTorsoMatrix = multMat(torsoMatrix, rThighMatrix);
+    this.rightThigh.setMatrix(rThighAndTorsoMatrix);
+
+    var lThighMatrix = multMat(this.leftThighMatrix, this.leftThighInitMatrix);
+    var lThighAndTorsoMatrix = multMat(torsoMatrix, lThighMatrix);
+    this.leftThigh.setMatrix(lThighAndTorsoMatrix);
+
+    var rLegMatrix = multMat(this.rightLegMatrix, this.rightLegInitMatrix);
+    var rLegAndTorsoMatrix = multMat(torsoMatrix, rLegMatrix);
+    this.rightLeg.setMatrix(rLegAndTorsoMatrix);
+
+    var lLegMatrix = multMat(this.leftLegMatrix, this.leftLegInitMatrix);
+    var lLegAndTorsoMatrix = multMat(torsoMatrix, lLegMatrix);
+    this.leftLeg.setMatrix(lLegAndTorsoMatrix);
+
+
+
     //TODO thighs and legs
 
     this.walkDirection = rotateVec3(this.walkDirection, angle, "y");
@@ -419,7 +433,22 @@ class Robot {
     var lForearmAndTorsoMatrix = multMat(torsoMatrix, lForearmMatrix);
     this.leftForearm.setMatrix(lForearmAndTorsoMatrix);
 
-    //TODO thighs and legs
+    var rLegMatrix = multMat(this.rightLegMatrix, this.rightLegInitMatrix)
+    var rLegAndTorsoMatrix = multMat(torsoMatrix,rLegMatrix)
+    this.rightLeg.setMatrix(rLegAndTorsoMatrix)
+
+    var lLegMatrix = multMat(this.leftLegMatrix, this.leftLegInitMatrix)
+    var lLegAndTorsoMatrix = multMat(torsoMatrix,lLegMatrix)
+    this.leftLeg.setMatrix(lLegAndTorsoMatrix)
+
+    var rThighMatrix = multMat(this.rightThighMatrix, this.rightThighInitMatrix)
+    var rThighAndTorsoMatrix = multMat(torsoMatrix,rThighMatrix)
+    this.rightThigh.setMatrix(rThighAndTorsoMatrix)
+
+    var lThighMatrix = multMat(this.leftThighMatrix, this.leftThighInitMatrix)
+    var lThighAndTorsoMatrix = multMat(torsoMatrix,lThighMatrix)
+    this.leftThigh.setMatrix(lThighAndTorsoMatrix)
+
   }
 
   rotateHead(angle){
@@ -830,8 +859,10 @@ var components = [
   "RightArm",
   "LeftArm",
   "LeftForearm",
-  // Add parts names
-  // TODO add legs and thighs
+  "LeftThigh",
+  "RightThigh",
+  "LeftLeg",
+  "RightLeg"
 ];
 var numberComponents = components.length;
 
@@ -874,8 +905,6 @@ function checkKeyboard() {
         break;
       case "Head":
         break;
-        // Add more cases
-        // TODO
       case "RightArm":
         robot.xRotateRightArm(-0.1);
         break;
@@ -888,6 +917,18 @@ function checkKeyboard() {
       case "LeftForearm":
         robot.xRotateLeftForearm(-0.1);
         break;
+      case "LeftThigh" :
+        robot.xRotateLeftThigh(-0.1)
+        break
+      case  "RightThigh":
+        robot.xRotateRightThigh(-0.1)
+        break
+      case   "LeftLeg" :
+        robot.xRotateLeftLeg(-0.1)
+        break
+      case  "RightLeg" :
+        robot.xRotateRightLeg(-0.1)
+        break
     }
   }
 
@@ -899,8 +940,6 @@ function checkKeyboard() {
         break;
       case "Head":
         break;
-        // Add more cases
-        // TODO
       case "RightArm":
         robot.xRotateRightArm(0.1);
         break;
@@ -913,6 +952,18 @@ function checkKeyboard() {
       case "LeftForearm":
         robot.xRotateLeftForearm(0.1);
         break;
+      case "LeftThigh" :
+        robot.xRotateLeftThigh(0.1)
+        break
+      case  "RightThigh":
+        robot.xRotateRightThigh(0.1)
+        break
+      case   "LeftLeg" :
+        robot.xRotateLeftLeg(0.1)
+        break
+      case  "RightLeg" :
+        robot.xRotateRightLeg(0.1)
+        break
     }
   }
 
