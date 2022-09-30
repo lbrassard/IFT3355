@@ -180,7 +180,7 @@ class Robot {
 
   initialTorsoMatrix(){
     var initialTorsoMatrix = idMat4();
-    initialTorsoMatrix = translateMat(initialTorsoMatrix, 0,this.torsoHeight*1.70, 0);
+    initialTorsoMatrix = translateMat(initialTorsoMatrix, 0,this.torsoHeight*1.65, 0);
 
     return initialTorsoMatrix;
   }
@@ -463,7 +463,7 @@ class Robot {
     matrix = multMat(this.torsoInitialMatrix, matrix);
     this.head.setMatrix(matrix);
   }
-  
+
   zRotateRightArm(angle){
     var xTranslate = 0.9;
     var yTranslate = 0.4;
@@ -1201,17 +1201,31 @@ function checkKeyboard() {
     let seconds = d.getSeconds();
     let forward = (seconds % 2 == 0);
 
-    if (forward){
-      robot.xRotateLeftThigh(-0.05);
-      robot.xRotateLeftLeg(0.05);
-      robot.xRotateRightThigh(0.05);
-      robot.xRotateRightLeg(-0.05);
+    // Arm and leg movement
+    if (!forward){
+      // Arms Rotation
+      robot.xRotateRightArm(-0.02);
+      robot.xRotateLeftArm(0.02);
+
+      //Rotations pour les jambes
+      robot.xRotateLeftThigh(-0.02);
+      robot.xRotateRightThigh(0.02);
+      robot.xRotateLeftLeg(0.1);
+      robot.xRotateRightLeg(-0.1);
     } else {
-      robot.xRotateLeftThigh(0.05);
-      robot.xRotateLeftLeg(-0.05);
-      robot.xRotateRightThigh(-0.05);
-      robot.xRotateRightLeg(0.05);
+      //Why not les bras aussi
+      robot.xRotateRightArm(0.02);
+      robot.xRotateLeftArm(-0.02);
+
+      //Rotations pour les jambes
+      robot.xRotateLeftThigh(0.02);
+      robot.xRotateRightThigh(-0.02);
+      robot.xRotateLeftLeg(-0.1);
+      robot.xRotateRightLeg(0.1);
     }
+
+    // Character bob for foot contact with floor
+    
   }
 
   // UP
