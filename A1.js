@@ -1056,6 +1056,10 @@ class Robot {
       this.leftLeg.setMatrix(matrix);
     }
   }
+
+  run(t){
+
+  }
 }
 
 var robot = new Robot();
@@ -1114,6 +1118,7 @@ function checkKeyboard() {
     switch (components[selectedRobotComponent]){
       case "Torso":
         robot.moveTorso(0.1);
+        robot.run(start);
         break;
       case "Head":
         break;
