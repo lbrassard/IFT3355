@@ -408,7 +408,7 @@ class Robot {
   }
 
   moveTorso(speed){
-    this.torsoMatrix = translateMat(this.torsoMatrix, speed * this.walkDirection.x, speed * this.walkDirection.y, speed * this.walkDirection.z);
+    this.torsoMatrix = translateMat(this.torsoMatrix, speed * this.walkDirection.x, 5*speed * this.walkDirection.y, speed * this.walkDirection.z);
 
     var torsoMatrix = multMat(this.torsoMatrix, this.torsoInitialMatrix);
     this.torso.setMatrix(torsoMatrix);
@@ -983,7 +983,7 @@ class Robot {
       this.rightLegMatrix = translateMat(this.rightLegMatrix, xTranslate, -yTranslate , -zTranslate);
       this.rightLegMatrix = multMat(rightLegMatrix, this.rightLegMatrix);
 
-      var matrix2 = multMat(this.rightLegMatrix, this.rightLegMatrix);
+      var matrix2 = multMat(this.rightLegMatrix, this.rightLegInitMatrix);
       matrix2 = multMat(this.torsoMatrix, matrix2);
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.rightLeg.setMatrix(matrix2);
@@ -1007,7 +1007,7 @@ class Robot {
       matrix = multMat(this.torsoInitialMatrix, matrix);
       this.rightThigh.setMatrix(matrix);
 
-      //Rightt leg x rotation
+      //Right leg x rotation
       this.rightLegMatrix = idMat4();
       this.rightLegMatrix = translateMat(this.rightLegMatrix, -xTranslate, yTranslate, zTranslate);
       this.rightLegMatrix = rotateMat(this.rightLegMatrix, angle, "x");
@@ -1117,39 +1117,47 @@ class Robot {
     }
   }
 
-}
-
-function run(){
-  const d = new Date();
-  let seconds = d.getSeconds();
-  let forward = (seconds % 2 == 0);
-
-  // Arm and leg movement
-  if (!forward){
-    // Arms Rotation
-    robot.xRotateRightArm(-0.02);
-    robot.xRotateLeftArm(0.02);
-
-    //Rotations pour les jambes
-    robot.xRotateLeftThigh(-0.02);
-    robot.xRotateRightThigh(0.02);
-    robot.xRotateLeftLeg(0.1);
-    robot.xRotateRightLeg(-0.1);
-  } else {
-    //Why not les bras aussi
-    robot.xRotateRightArm(0.02);
-    robot.xRotateLeftArm(-0.02);
-
-    //Rotations pour les jambes
-    robot.xRotateLeftThigh(0.02);
-    robot.xRotateRightThigh(-0.02);
-    robot.xRotateLeftLeg(-0.1);
-    robot.xRotateRightLeg(0.1);
+  run(){
+    const d = new Date();
+    let seconds = d.getSeconds();
+    let forward = (seconds % 2 == 0);
+    let upDownTime = d.getMilliseconds();
+    let upDown = (upDownTime > 500 && upDownTime <= 999);
+  
+    //Bobbing up and down
+    if (!upDown){
+      this.walkDirection.y = 0.01;
+    } else {
+      this.walkDirection.y = -0.01;
+    }
+  
+    // Arm and leg movement
+    if (!forward){
+      robot.xRotateRightArm(-0.02);
+      robot.xRotateLeftArm(0.02);
+  
+      //Rotations pour les jambes
+      robot.xRotateLeftThigh(-0.02);
+      robot.xRotateRightThigh(0.02);
+      robot.xRotateLeftLeg(0.1);
+      robot.xRotateRightLeg(-0.1);
+    } else {
+      //Why not les bras aussi
+      robot.xRotateRightArm(0.02);
+      robot.xRotateLeftArm(-0.02);
+  
+      //Rotations pour les jambes
+      robot.xRotateLeftThigh(0.02);
+      robot.xRotateRightThigh(-0.02);
+      robot.xRotateLeftLeg(-0.1);
+      robot.xRotateRightLeg(0.1);
+    }
+    
   }
 
-  // Character bob for foot contact with floor
-  
 }
+
+
 
 var robot = new Robot();
 
@@ -1207,7 +1215,7 @@ function checkKeyboard() {
     switch (components[selectedRobotComponent]){
       case "Torso":
         robot.moveTorso(0.1);
-        run();
+        robot.run();
         break;
       case "Head":
         break;
