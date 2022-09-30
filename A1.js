@@ -1143,26 +1143,24 @@ class Robot {
     }
   }
 
-  walk(direction,speed){
-    //First step while standing
-    for (let i=1; i<10 ; i++){
-      setInterval(this.xRotateLeftThigh(-0.05),1000)
-    }
+}
 
-    // this.moveTorso(speed);
-    // this.xRotateLeftThigh(-0.05);
-    // this.xRotateLeftThigh(-0.05);
-    // this.xRotateLeftThigh(-0.05);
-    // this.xRotateLeftThigh(-0.05);
-    // this.xRotateLeftLeg(0.05);
-    // this.xRotateLeftLeg(0.05);
-    // this.xRotateLeftLeg(0.05);
-    // this.xRotateLeftLeg(0.05);
+function run(){
+  const d = new Date();
+  let seconds = d.getSeconds();
+  let forward = (seconds % 2 == 0);
 
-    
-
+  if (forward){
+    robot.xRotateLeftThigh(-0.1);
+    robot.xRotateLeftLeg(0.1);
+    robot.xRotateRightThigh(0.1);
+    robot.xRotateRightLeg(-0.1);
+  } else {
+    robot.xRotateLeftThigh(0.1);
+    robot.xRotateLeftLeg(-0.1);
+    robot.xRotateRightThigh(-0.1);
+    robot.xRotateRightLeg(0.1);
   }
-
 }
 
 var robot = new Robot();
@@ -1222,6 +1220,7 @@ function checkKeyboard() {
     switch (components[selectedRobotComponent]){
       case "Torso":
         robot.moveTorso(0.1);
+        run();
         break;
       case "Head":
         break;
@@ -1248,9 +1247,6 @@ function checkKeyboard() {
         break
       case  "RightLeg" :
         robot.xRotateRightLeg(-0.1)
-        break
-      case "Walk":
-        robot.walk(1,0.1)
         break
     }
   }
@@ -1287,9 +1283,6 @@ function checkKeyboard() {
       case  "RightLeg" :
         robot.xRotateRightLeg(0.1)
         break
-      case "Walk":
-        robot.walk(-1,-0.1)
-        break
     }
   }
 
@@ -1301,7 +1294,7 @@ function checkKeyboard() {
         break;
       case "Head":
         robot.rotateHead(0.1);
-        break;
+      break;
         // Add more cases
         // TODO
       case "RightArm":
