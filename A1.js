@@ -463,7 +463,7 @@ class Robot {
     matrix = multMat(this.torsoInitialMatrix, matrix);
     this.head.setMatrix(matrix);
   }
-
+  
   zRotateRightArm(angle){
     var xTranslate = 0.9;
     var yTranslate = 0.4;
