@@ -162,6 +162,8 @@ class Robot {
     this.leftForearmXAngle = 0;
     this.rightThighXAngle = 0;
     this.leftThighXAngle = 0;
+    this.rightLegXAngle = 0;
+    this.leftLegXAngle = 0; 
 
     this.thighRadius = 0.35;
     this.legRadius = 0.35;
@@ -226,7 +228,7 @@ class Robot {
   initialLeftThighMatrix(){
     var initLeftThighMat = idMat4();
     initLeftThighMat = translateMat(initLeftThighMat,-this.torsoRadius/2,-this.torsoHeight*0.85,0);
-    initLeftThighMat = rescaleMat(initLeftThighMat,0.6,1.5,0.5);
+    initLeftThighMat = rescaleMat(initLeftThighMat,0.8,1.5,0.5);
 
     return initLeftThighMat
   }
@@ -234,7 +236,7 @@ class Robot {
   initialRightThighMatrix(){
     var initRightThighMat = idMat4();
     initRightThighMat = translateMat(initRightThighMat,this.torsoRadius/2,-this.torsoHeight*0.85,0);
-    initRightThighMat = rescaleMat(initRightThighMat,0.6,1.5,0.5);
+    initRightThighMat = rescaleMat(initRightThighMat,0.8,1.5,0.5);
 
     return initRightThighMat
   }
@@ -462,8 +464,6 @@ class Robot {
     this.head.setMatrix(matrix);
   }
 
-  // Add methods for other parts
-  // TODO: thighs, legs and foreamrs
   zRotateRightArm(angle){
     var xTranslate = 0.9;
     var yTranslate = 0.4;
@@ -881,7 +881,11 @@ class Robot {
     var xTranslate = 0.5;
     var yTranslate = 0.8;
     var zTranslate = 0;
+    var tempLeftLegXAngle = this.leftLegXAngle;
 
+    if(this.leftLegXAngle != 0){
+      this.xRotateLeftLeg(-tempLeftLegXAngle);
+    }
   
     if(this.leftThighXAngle >= -1.7 && angle < 0) {
       this.leftThighXAngle += angle;
@@ -891,8 +895,6 @@ class Robot {
 
       var leftThighMatrix = this.leftThighMatrix;
       var leftLegMatrix = this.leftLegMatrix;
-      console.log("x= " + this.leftThighXAngle.toString() + " up motion");
-      console.log(angle)
 
       // Left Thigh x rotation
       this.leftThighMatrix = idMat4();
@@ -919,13 +921,11 @@ class Robot {
       this.leftLeg.setMatrix(matrix2);
     }
 
-    else if(this.leftThighXAngle < 0 && angle > 0) {
+    else if(this.leftThighXAngle < 0.6 && angle > 0) {
       this.leftThighXAngle += angle;
 
       var leftThighMatrix = this.leftThighMatrix;
       var leftLegMatrix = this.leftLegMatrix;
-      console.log("x= " + this.leftThighXAngle.toString() + " down motion");
-      console.log(angle)
 
       // Left Thigh x rotation
       this.leftThighMatrix = idMat4();
@@ -934,7 +934,6 @@ class Robot {
       this.leftThighMatrix = translateMat(this.leftThighMatrix, xTranslate, -yTranslate, zTranslate);
       this.leftThighMatrix = multMat(leftThighMatrix, this.leftThighMatrix);
 
-      console.log("here")
       var matrix = multMat(this.leftThighMatrix, this.leftThighInitMatrix);
       matrix = multMat(this.torsoMatrix, matrix);
       matrix = multMat(this.torsoInitialMatrix, matrix);
@@ -952,13 +951,21 @@ class Robot {
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.leftLeg.setMatrix(matrix2);
     }
+
+    if(tempLeftLegXAngle != 0){
+      this.xRotateLeftLeg(tempLeftLegXAngle);
+    }
   }
 
   xRotateRightThigh(angle){
     var xTranslate = 0.5;
     var yTranslate = 0.8;
     var zTranslate = 0;
+    var tempRightLegXAngle = this.rightLegXAngle;
 
+    if(this.rightLegXAngle != 0){
+      this.xRotateRightLeg(-tempRightLegXAngle);
+    }
   
     if(this.rightThighXAngle >= -1.7 && angle < 0) {
       this.rightThighXAngle += angle;
@@ -968,8 +975,37 @@ class Robot {
 
       var rightThighMatrix = this.rightThighMatrix;
       var rightLegMatrix = this.rightLegMatrix;
-      console.log("x= " + this.rightThighXAngle.toString() + " up motion");
-      console.log(angle)
+
+      // Right Thigh x rotation
+      this.rightThighMatrix = idMat4();
+      this.rightThighMatrix = translateMat(this.rightThighMatrix, -xTranslate, yTranslate, -zTranslate);      
+      this.rightThighMatrix = rotateMat(this.rightThighMatrix, angle, "x");
+      this.rightThighMatrix = translateMat(this.rightThighMatrix, xTranslate, -yTranslate, zTranslate);
+      this.rightThighMatrix = multMat(rightThighMatrix, this.rightThighMatrix);
+
+      var matrix = multMat(this.rightThighMatrix, this.rightThighInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.rightThigh.setMatrix(matrix)
+
+      //Right Leg x rotation
+      this.rightLegMatrix = idMat4();
+      this.rightLegMatrix = translateMat(this.rightLegMatrix, -xTranslate, yTranslate , zTranslate);
+      this.rightLegMatrix = rotateMat(this.rightLegMatrix, angle, "x");
+      this.rightLegMatrix = translateMat(this.rightLegMatrix, xTranslate, -yTranslate , -zTranslate);
+      this.rightLegMatrix = multMat(rightLegMatrix, this.rightLegMatrix);
+
+      var matrix2 = multMat(this.rightLegMatrix, this.rightLegMatrix);
+      matrix2 = multMat(this.torsoMatrix, matrix2);
+      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
+      this.rightLeg.setMatrix(matrix2);
+    }
+
+    else if(this.rightThighXAngle < 0.6 && angle > 0) {
+      this.rightThighXAngle += angle;
+
+      var rightThighMatrix = this.rightThighMatrix;
+      var rightLegMatrix = this.rightLegMatrix;
 
       // Right Thigh x rotation
       this.rightThighMatrix = idMat4();
@@ -983,39 +1019,7 @@ class Robot {
       matrix = multMat(this.torsoInitialMatrix, matrix);
       this.rightThigh.setMatrix(matrix);
 
-      //Right Leg x rotation
-      this.rightLegMatrix = idMat4();
-      this.rightLegMatrix = translateMat(this.rightLegMatrix, -xTranslate, yTranslate , zTranslate);
-      this.rightLegMatrix = rotateMat(this.rightLegMatrix, angle, "x");
-      this.rightLegMatrix = translateMat(this.rightLegMatrix, xTranslate, -yTranslate , -zTranslate);
-      this.rightLegMatrix = multMat(rightLegMatrix, this.rightLegMatrix);
-
-      var matrix2 = multMat(this.rightLegMatrix, this.rightLegInitMatrix);
-      matrix2 = multMat(this.torsoMatrix, matrix2);
-      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
-      this.rightLeg.setMatrix(matrix2);
-    }
-    else if(this.rightThighXAngle < 0 && angle > 0) {
-      this.rightThighXAngle += angle;
-
-      var rightThighMatrix = this.rightThighMatrix;
-      var rightLegMatrix = this.rightLegMatrix;
-      console.log("x= " + this.rightThighXAngle.toString() + " down motion");
-      console.log(angle)
-
-      // Right Thigh x rotation
-      this.rightThighMatrix = idMat4();
-      this.rightThighMatrix = translateMat(this.rightThighMatrix, -xTranslate, yTranslate, -zTranslate);
-      this.rightThighMatrix = rotateMat(this.rightThighMatrix, angle, "x");
-      this.rightThighMatrix = translateMat(this.rightThighMatrix, xTranslate, -yTranslate, zTranslate);
-      this.rightThighMatrix = multMat(rightThighMatrix, this.rightThighMatrix);
-
-      var matrix2 = multMat(this.rightThighMatrix, this.rightThighInitMatrix);
-      matrix2 = multMat(this.torsoMatrix, matrix2);
-      matrix2 = multMat(this.torsoInitialMatrix, matrix2);
-      this.rightThigh.setMatrix(matrix2);
-
-      //Right leg x rotation
+      //Rightt leg x rotation
       this.rightLegMatrix = idMat4();
       this.rightLegMatrix = translateMat(this.rightLegMatrix, -xTranslate, yTranslate, zTranslate);
       this.rightLegMatrix = rotateMat(this.rightLegMatrix, angle, "x");
@@ -1026,18 +1030,24 @@ class Robot {
       matrix2 = multMat(this.torsoMatrix, matrix2);
       matrix2 = multMat(this.torsoInitialMatrix, matrix2);
       this.rightLeg.setMatrix(matrix2);
-      
+    }
+
+    if(tempRightLegXAngle != 0){
+      this.xRotateRightLeg(tempRightLegXAngle);
     }
   }
-
+  
   xRotateLeftLeg(angle){
     var xTranslate = 0.5;
-    var yTranslate = 0.5;
+    var yTranslate = 1.6;
     var zTranslate = 0;
 
-    if(this.leftLegXAngle > -2 && angle < 0) {
+    console.log(this.leftLegXAngle)
+    console.log(angle)
+
+    if(this.leftLegXAngle > 0.1 && angle < 0) {
       this.leftLegXAngle += angle;
-      if (this.leftLegXAngle < -2.1) {
+      if (this.leftLegXAngle < -0.01) {
         this.leftLegXAngle = 0;
       }
       var leftLegMatrix = this.leftLegMatrix;
@@ -1054,11 +1064,83 @@ class Robot {
       matrix = multMat(this.torsoMatrix, matrix);
       matrix = multMat(this.torsoInitialMatrix, matrix);
       this.leftLeg.setMatrix(matrix);
+      console.log("here")
+    }
+
+    else if(this.leftLegXAngle < 1.5 && angle > 0) {
+      this.leftLegXAngle += angle;
+
+      var leftLegMatrix = this.leftLegMatrix;
+      console.log("x= " + this.leftLegXAngle.toString() + " down motion");
+      console.log(angle)
+
+      // Left Thigh x rotation
+      this.leftLegMatrix = idMat4();
+      this.leftLegMatrix = translateMat(this.leftLegMatrix, -xTranslate, yTranslate, -zTranslate);
+      this.leftLegMatrix = rotateMat(this.leftLegMatrix, angle, "x");
+      this.leftLegMatrix = translateMat(this.leftLegMatrix, xTranslate, -yTranslate, zTranslate);
+      this.leftLegMatrix = multMat(leftLegMatrix, this.leftLegMatrix);
+
+      console.log("here")
+      var matrix = multMat(this.leftLegMatrix, this.leftLegInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.leftLeg.setMatrix(matrix);
+
     }
   }
 
-  run(t){
+  xRotateRightLeg(angle){
+    var xTranslate = 0.5;
+    var yTranslate = 1.6;
+    var zTranslate = 0;
 
+    console.log(this.rightLegXAngle)
+    console.log(angle)
+
+    if(this.rightLegXAngle > 0.1 && angle < 0) {
+      this.rightLegXAngle += angle;
+      if (this.rightLegXAngle < -0.01) {
+        this.rightLegXAngle = 0;
+      }
+      var rightLegMatrix = this.rightLegMatrix;
+      console.log("x= " + this.rightLegXAngle.toString());
+
+      // Right Leg x rotation
+      this.rightLegMatrix = idMat4();
+      this.rightLegMatrix = translateMat(this.rightLegMatrix, -xTranslate, yTranslate, -zTranslate);
+      this.rightLegMatrix = rotateMat(this.rightLegMatrix, angle, "x");
+      this.rightLegMatrix = translateMat(this.rightLegMatrix, xTranslate, -yTranslate, zTranslate);
+      this.rightLegMatrix = multMat(rightLegMatrix, this.rightLegMatrix);
+
+      var matrix = multMat(this.rightLegMatrix, this.rightLegInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.rightLeg.setMatrix(matrix);
+      console.log("here")
+    }
+
+    else if(this.rightLegXAngle < 1.5 && angle > 0) {
+      this.rightLegXAngle += angle;
+
+      var rightLegMatrix = this.rightLegMatrix;
+      console.log("x= " + this.rightLegXAngle.toString() + " down motion");
+      console.log(angle)
+
+      // Right Thigh x rotation
+      this.rightLegMatrix = idMat4();
+      this.rightLegMatrix = translateMat(this.rightLegMatrix, -xTranslate, yTranslate, -zTranslate);
+      this.rightLegMatrix = rotateMat(this.rightLegMatrix, angle, "x");
+      this.rightLegMatrix = translateMat(this.rightLegMatrix, xTranslate, -yTranslate, zTranslate);
+      this.rightLegMatrix = multMat(rightLegMatrix, this.rightLegMatrix);
+
+      console.log("here")
+      var matrix = multMat(this.rightLegMatrix, this.rightLegInitMatrix);
+      matrix = multMat(this.torsoMatrix, matrix);
+      matrix = multMat(this.torsoInitialMatrix, matrix);
+      this.rightLeg.setMatrix(matrix);
+
+    }
   }
 }
 
@@ -1078,7 +1160,8 @@ var components = [
   "LeftThigh",
   "RightThigh",
   "LeftLeg",
-  "RightLeg"
+  "RightLeg",
+  "Walk"
 ];
 var numberComponents = components.length;
 
@@ -1113,12 +1196,30 @@ function checkKeyboard() {
     window.alert(components[selectedRobotComponent] + " selected");
   }
 
+  function run(){
+    const d = new Date();
+    let seconds = d.getSeconds();
+    let forward = (seconds % 2 == 0);
+
+    if (forward){
+      robot.xRotateLeftThigh(-0.05);
+      robot.xRotateLeftLeg(0.05);
+      robot.xRotateRightThigh(0.05);
+      robot.xRotateRightLeg(-0.05);
+    } else {
+      robot.xRotateLeftThigh(0.05);
+      robot.xRotateLeftLeg(-0.05);
+      robot.xRotateRightThigh(-0.05);
+      robot.xRotateRightLeg(0.05);
+    }
+  }
+
   // UP
   if (keyboard.pressed("w")){
     switch (components[selectedRobotComponent]){
       case "Torso":
         robot.moveTorso(0.1);
-        robot.run(start);
+        run();
         break;
       case "Head":
         break;
@@ -1180,6 +1281,9 @@ function checkKeyboard() {
         break
       case  "RightLeg" :
         robot.xRotateRightLeg(0.1)
+        break
+      case "Walk":
+        robot.walk(-1,-0.1)
         break
     }
   }
