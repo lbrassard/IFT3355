@@ -464,8 +464,6 @@ class Robot {
     this.head.setMatrix(matrix);
   }
 
-  // Add methods for other parts
-  // TODO: thighs, legs and foreamrs
   zRotateRightArm(angle){
     var xTranslate = 0.9;
     var yTranslate = 0.4;
@@ -1144,6 +1142,27 @@ class Robot {
 
     }
   }
+
+  walk(direction,speed){
+    //First step while standing
+    for (let i=1; i<10 ; i++){
+      setInterval(this.xRotateLeftThigh(-0.05),1000)
+    }
+
+    // this.moveTorso(speed);
+    // this.xRotateLeftThigh(-0.05);
+    // this.xRotateLeftThigh(-0.05);
+    // this.xRotateLeftThigh(-0.05);
+    // this.xRotateLeftThigh(-0.05);
+    // this.xRotateLeftLeg(0.05);
+    // this.xRotateLeftLeg(0.05);
+    // this.xRotateLeftLeg(0.05);
+    // this.xRotateLeftLeg(0.05);
+
+    
+
+  }
+
 }
 
 var robot = new Robot();
@@ -1162,7 +1181,8 @@ var components = [
   "LeftThigh",
   "RightThigh",
   "LeftLeg",
-  "RightLeg"
+  "RightLeg",
+  "Walk"
 ];
 var numberComponents = components.length;
 
@@ -1229,6 +1249,9 @@ function checkKeyboard() {
       case  "RightLeg" :
         robot.xRotateRightLeg(-0.1)
         break
+      case "Walk":
+        robot.walk(1,0.1)
+        break
     }
   }
 
@@ -1263,6 +1286,9 @@ function checkKeyboard() {
         break
       case  "RightLeg" :
         robot.xRotateRightLeg(0.1)
+        break
+      case "Walk":
+        robot.walk(-1,-0.1)
         break
     }
   }
